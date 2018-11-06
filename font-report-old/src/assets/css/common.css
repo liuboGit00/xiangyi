@@ -1,0 +1,204 @@
+/* 页面最小宽度 */
+body {
+    min-width: 1366px;
+    font: 14px "'Microsoft YaHei", "微软雅黑", Arial, Helvetica, sans-serif;
+}
+
+/* 清除浮动 */
+.clearfix:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 10px;
+    background-color: white;
+    border-radius: 2px;
+}
+::-webkit-scrollbar:hover {
+    background-color: #c9c9c9;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.5);
+}
+
+/* 导航菜单的样式 */
+.el-menu .el-menu-item.is-active span:not(.oneleve)::before {
+    content: url("../img/hover-icon.png")
+}
+.el-menu .el-menu-item span:not(.oneleve)::before,
+.el-submenu__title .twoleve::before {
+    margin-right: 15px;
+    content: url("../img/normal-icon.png")
+}
+.el-menu .el-menu-item.is-active {
+    color: #278df6;
+}
+.el-menu .el-menu-item:focus {
+    background-color: transparent;
+}
+.el-menu .el-menu-item:hover {
+    background-color: #278df6;
+}
+.el-menu .el-submenu__title:hover {
+    background-color: #278df6;
+}
+ul.el-menu {
+    display: block;
+    border-right: 1px solid #3a4051;
+    background-color: #3a4051;
+}
+.el-menu .el-menu-item-group__title{
+    padding:0;
+}
+.el-menu .el-submenu .el-menu-item,
+.el-menu .el-submenu__title,.el-menu .el-menu-item {
+    height: 42px;
+    line-height: 42px;
+    border-radius: 4px;
+    font-size:18px;
+}
+.el-menu .el-submenu__title i:first-child,.el-menu .el-submenu__title span,.el-menu .el-menu-item i,.el-menu .el-menu-item span{
+    font-size:18px;
+    vertical-align: baseline;
+    margin: 0;
+    width: auto;
+}
+.el-menu {
+    width: 240px;
+    max-width: 100%;
+}
+
+/* 列表筛选条件表单查询 */
+.define-select-group .el-form-item__label {
+    font-size:18px;
+    padding:0;
+    margin-right:10px;
+    font-weight: normal;
+    font-stretch: normal;
+    letter-spacing: 0px;
+    color: #ffffff;
+    line-height: 32px;
+}
+.define-select-group .el-input{
+    font-size:16px;
+}
+.define-select-group input.el-input__inner {
+    cursor: pointer;
+    width: 123px;
+    height: 32px;
+    background-color: #435c9b;
+    box-shadow: 0px 3px 6px 1px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    border: solid 1px #b7b7b7;
+    vertical-align: bottom;
+    color:#ffffff;
+}
+.define-select-group .el-form-item__content {
+    line-height: 32px;
+}
+.define-select-group .el-form--inline .el-form-item{
+    margin-right: 2%;
+    margin-bottom:0;
+}
+.content-area{
+  width: 100%;
+  margin-top: -40px;
+}
+.underlinebtn{
+  position: relative;
+  top:0;
+  left:0;
+  width:100%;
+  text-align:right;
+  border-bottom:1px dashed #ddd;
+  padding-right:20px;
+  padding-left:20px;
+  height:40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+ .underlinebtn button{
+    margin-left: 15px;
+    font-size: 14px;
+    padding: 6px 12px; 
+  }
+
+
+  /* 对话框样式 */
+.el-dialog .el-dialog__header{
+      background-color: #4c65a4;
+      line-height: 50px;
+      height: 50px;
+      padding:0 20px;
+      color:#ffffff;
+  }
+.el-dialog .el-dialog__header .el-icon-close,
+.el-dialog .el-dialog__header>span{color:#ffffff;}
+
+/* 报告下面的复选框 */
+ .combination .el-checkbox__inner{
+    width: 20px;
+    height: 20px;
+    border:1px solid black;
+}
+.combination .el-checkbox__inner::after{
+    height: 14px;
+    left: 5px;
+    top: -1px;
+    width: 7px;
+}
+
+/* 滚动加载内容补充空元素 */
+.content-frame::after{
+    content: " ";
+    width: 3.05rem;
+    min-width: 320px;
+}
+
+/* 自定义按钮样式 */
+.define.el-button--primary.is-plain{
+    background: #ffffff;
+}
+.el-icon-circle-plus{
+    color:#4c65a4;
+}
+.el-icon-circle-plus:hover{
+    color:#278df6;
+    cursor: pointer;
+}
+
+/* 报告发布的紧急程度 */
+.publicprogress label:nth-child(1) .el-radio__input.is-checked .el-radio__inner{
+    background: #e75052;
+    border-color:#e75052;
+}
+.publicprogress label:nth-child(1) .el-radio__label{
+    color:#e75052;
+}
+.publicprogress label:nth-child(2) .el-radio__input.is-checked .el-radio__inner{
+    background: #efc551;
+    border-color:#efc551;
+}
+.publicprogress label:nth-child(2) .el-radio__label{
+    color:#efc551;
+}
+.publicprogress label:nth-child(3) .el-radio__input.is-checked .el-radio__inner{
+    background: #3190f2;
+    border-color:#3190f2;
+}
+.publicprogress label:nth-child(3) .el-radio__label{
+    color:#3190f2;
+}

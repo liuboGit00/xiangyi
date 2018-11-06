@@ -1,0 +1,45 @@
+<template>
+  <div class="page">
+    <div class="formGroup-search"></div>
+     <div class="container">
+        内容展示
+     </div>
+  </div>
+</template>
+
+<script type="text/ecmascript-6">
+export default {
+  data() {
+    return {};
+  },
+  components: {}
+};
+</script>
+
+<style scoped lang="less">
+@import "../assets/less/variable.less";
+.page {
+  width: 100%;
+  overflow: auto;
+  background-color: #f4f6f9;
+}
+.formGroup-search {
+  height: @height-formselectgroup;
+  display: flex;
+  align-items: center;
+  background-color: #4c65a4;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding-left: 64px;
+  justify-content: center;
+}
+.container {
+  width: @width-container;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 30px;
+  padding-bottom: 40px;
+  border:1px solid #ddd;
+}
+</style>

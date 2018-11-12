@@ -1,0 +1,10 @@
+export const SEND_APPARATUS = 'send-apparatus';
+export const SEND_ULTRASOUND_DOCTORS = 'send_ultrasound_doctors';
+export const SEND_CHECK_POINT = 'send_check_point';
+export const SEND_DISCIPLINE_CODE = 'send_discipline_code';
+export const SEND_CLINICAL_DIAGNOSIS = 'send_clinical_diagnosis';
+export const SEND_CLASSIFICATION_DISEASES = 'send_classification_diseases';
+export const SEND_HOSPITAL = 'send_hospital';
+export const SEND_PATIENT_INFORMATION = 'send_patient_information';
+export const SEND_ROW = 'send_row';
+export const SEND_PATIENTID = 'send_patientid';

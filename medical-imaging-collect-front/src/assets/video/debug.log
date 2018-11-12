@@ -1,0 +1,22 @@
+[21524:18792:0926/180638:INFO:AppRunner.cpp(611)] Begin run process geeplayer, -runfrom openfile "C:\Users\admin\Desktop\medical-imaging-collect-front\src\assets\video\111.mp4", mainplugin is mainPlugin
+[21524:18792:0926/180638:INFO:AppRunner.cpp(617)] ProductName is GeePlayer1
+[21524:18792:0926/180638:INFO:ChannelManager.cpp(1219)] create connection thread
+[21524:18792:0926/180638:INFO:AppRunner.cpp(661)] apppluginbase version is 5.1.3.13
+[21524:18792:0926/180638:INFO:UIlib.cpp(192)] quilib: version is 5.1.3.9
+[21524:18792:0926/180638:INFO:serviceManager.cpp(508)] mainprocessisrunning key is set as 1
+[21524:18792:0926/180638:INFO:serviceManager.cpp(629)] create local service plugin PluginServerStatePlugin
+[21524:18792:0926/180638:INFO:serviceManager.cpp(687)] plugin PluginServerStatePlugin DoPluginInit
+[21524:18792:0926/180638:INFO:serviceManager.cpp(1272)] repository parse over
+[21524:18792:0926/180638:INFO:AppRunner.cpp(720)] loop exit geeplayer call main plugin DestoryPluginEntry
+[21524:18792:0926/180638:INFO:PluginDevelopAssistant.cpp(115)] real plugin mainPlugin call DestroyPlugin
+[21524:18792:0926/180638:INFO:IPlugin.cpp(31)] destruct plugin mainPlugin
+[21524:18792:0926/180638:INFO:serviceManager.cpp(1353)] mainPlugin plugin had destroy by DestructPlugin
+[21524:18792:0926/180638:INFO:serviceManager.cpp(1906)] DestructManager begin
+[21524:18792:0926/180638:INFO:IPlugin.cpp(31)] destruct plugin PluginServerStatePlugin
+[21524:18792:0926/180638:INFO:PluginDevelopAssistant.cpp(295)] real plugin PluginServerStatePlugin call DestroyPlugin
+[21524:18792:0926/180638:INFO:serviceManager.cpp(1353)] PluginServerStatePlugin plugin had destroy by DestructPlugin
+[21524:18792:0926/180638:INFO:serviceManager.cpp(1759)] DeleteLeftPlugins begin
+[21524:18792:0926/180638:INFO:serviceManager.cpp(1822)] DeleteLeftPlugins end
+[21524:18792:0926/180638:INFO:serviceManager.cpp(508)] mainprocessisrunning key is set as 0
+[21524:18792:0926/180638:INFO:AppRunner.cpp(735)] close mutex of process geeplayer
+[21524:18792:0926/180638:INFO:AppRunner.cpp(743)] run process geeplayer end

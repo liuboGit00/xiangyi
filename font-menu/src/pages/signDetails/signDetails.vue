@@ -7,7 +7,7 @@
         </div>
         <div class="list" style='color: #999999'>
             <ul>
-                <li v-for="(item,index) in selList" :key="index" :class="{ selcolor:changeRed == index}" @click="pitch(index)">{{item.tagName}}</li>
+                <li v-for="(item,index) in selList" :key="index" :class="{ selcolor:changeRed == index}" @click="pitch(index)" :title="item.tagName">{{item.tagName}}</li>
             </ul>
             <p class="allList" @click="showAllList" v-show="selList.length == 15"><span>展开全部</span><i class="el-icon-arrow-right"></i></p>
             <p class="allList" @click="showAllList" v-show="selList.length > 15"><span>收起全部</span><i class="el-icon-arrow-up"></i></p>
@@ -39,7 +39,7 @@ export default {
     return {
         changeRed: 0,
         items:[{
-            title:"营业收入",
+            title:"",
             edit:true,
             type:'text',
             contant:""
@@ -183,7 +183,8 @@ export default {
         }
         for(let i of this.items){
             a ++
-            if(i.title == '营业收入'){
+            if(i.title == ''){
+                i.title = this.selAllList[index].tagName
                 i.contant = this.selAllList[index].info
             }else if(i.title == '数据来源'){
                 i.contant = this.selAllList[index].source

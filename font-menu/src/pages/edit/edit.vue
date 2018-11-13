@@ -1,24 +1,21 @@
 <template>
   <div class="page"  ref="page">
       <div class="formSelectGroup">
-           <el-button type="primary" @click="save"><i class="iconfont icon-baocun"></i>保存</el-button>
-           <el-button type="primary" @click="undo"><i class="iconfont icon-asmkticon0220"></i>撤销</el-button>
-           <el-button type="primary" @click="remark"><i class="iconfont icon-asmkticon0220"></i>重置</el-button>
-           <el-button type="primary" @click="bold"><i class="iconfont icon-asmkticon0220"></i>加粗</el-button>
-           <el-button type="primary" @click="italic"><i class="iconfont icon-asmkticon0220"></i>斜体</el-button>
+           <el-button type="primary" @click="save"><i class="iconfont icon-baocunwendang"></i>保存</el-button>
+           <el-button type="primary" @click="undo"><i class="iconfont icon-ziyuanbaosongshenqingshujuchexiao"></i>撤销</el-button>
+           <el-button type="primary" @click="remark"><i class="iconfont icon-shuaxin1"></i>重置</el-button>
+           <el-button type="primary" @click="bold"><i class="iconfont icon-jiacu"></i>加粗</el-button>
+           <el-button type="primary" @click="italic"><i class="iconfont icon-xieti"></i>斜体</el-button>
            <el-button class="titleclas" type="primary" @click="handleFontsize"><i class="iconfont icon-mulu"></i>一级标题</el-button>
            <el-button class="titleclas" type="primary" @click="secondary('20px')"><i class="iconfont icon-mulu"></i>二级标题</el-button>
-           <el-button type="primary" @click="handleform" id="tabel"><i class="iconfont icon-asmkticon0220"></i>表格<i class="el-icon-caret-bottom el-icon--right"></i></el-button>
-           <el-button type="primary" @click="topImg"><i class="iconfont icon-asmkticon0220"></i>图片</el-button>
+           <el-button type="primary" @click="handleform" id="tabel"><i class="iconfont icon-biaoge"></i>表格<i class="el-icon-caret-bottom el-icon--right"></i></el-button>
+           <el-button type="primary" @click="topImg"><i class="iconfont icon-tupian1"></i>图片</el-button>
       </div>
       <div class="container" ref="container">
            <div class="sideleft">
              <li></li>
              <ul>
-               <li :class="{active:scrollactive == index}" v-for="(item,index) in items" :key="index" @click="backDom(index)"><span>{{index + 1}}</span><em>{{item.title}}</em></li>
-               <!-- <li :class="{active:scrollactive == 1}"><span>2</span>数据来源</li>
-               <li :class="{active:scrollactive == 2}"><span>3</span>相关业务</li>
-               <li :class="{active:scrollactive == 3}"><span>4</span>使用数据</li> -->
+               <li :class="{active:scrollactive == index}" v-for="(item,index) in items" :key="index" @click="backDom(index)"><span>{{index + 1}}</span><em v-html="item.title"></em></li>
              </ul>
              <li class="end"></li>
            </div>                   
@@ -30,10 +27,11 @@
                       <p class="catalog">
                           <span class="left"></span>
                           <span class="center">
-                            <span><em class="firstTitle" :contenteditable="index >= 4 && item.ueType" @blur="getBlur(item,index)">{{item.title}}</em></span>
+                            <input type="text"  @keyup="getBlur(item,index)" :value="item.title" maxlength="10" v-if='item.edit' @blur="leave(item)">
+                            <span @click="index > 3 && item.ueType ? downBlur(item) : '' " class="firstTitle" v-if='!item.edit'>{{item.title}}</span>
                             <i class="solid"></i>
                           </span>
-                          <span class="right" v-show="item.edit"><i class="el-icon-edit"></i>编辑</span>
+                          <!-- <span class="right" v-show="item.edit"><i class="el-icon-edit"></i>编辑</span> -->
                       </p>
                       <div class="contantInfo" v-if="item.type == 'text'">
                         <template v-show="item.ueType">
@@ -41,7 +39,7 @@
                             
                           </script>
                         </template>
-                        <div v-html="item.contant" v-show="!item.ueType" class="saveContant" @click="changeEditor(item)" style="min-height:140px"></div>
+                        <div v-html="item.contant" v-show="!item.ueType" class="saveContant" @click="changeEditor(item,item.contant)" style="min-height:335px">{{item.contant}}</div>
                       </div>
                       <div class="contantInfo" v-else>
                           <p class="tabelTitle">{{item.contant}}</p>
@@ -127,14 +125,16 @@
 
 <script>
 import server from './server.js'
+import { imageUrl, cancleHTTP } from "../../axios/env.js";
 export default {
   data() {
     return {
+      create: null,
       ue:null,
       containerleft: 280,
       scrollactive: 0,
+      scrollClick:false,
       formframeflag: false,
-      dialogobj:{},
       dialogVisible:false,
       activeName:'first',  //图片选择上传方式
       iamgeInfo:"",  //图片标题表述
@@ -146,7 +146,7 @@ export default {
       currentEditor:null,  //当前编辑器所在DOM
       domArr:[],  //dom对应高度
       items:[{
-            title:"营业收入",
+            title:"字段定义",
             edit:false,
             type:'text',
             id:'contant1',
@@ -178,25 +178,27 @@ export default {
             ueType:false,
             contant:""
         }],
+        innerHTML:'',
         initialData : null,  //用户数据
-        initialItems : null,
-        imageUrlTesting:'https://test-wl008.weilian.cn/dm-project/upload/images/',
-        developmentImageUrl:'http://10.6.244.5:8280/dm-project/upload/images/'
+        initialItems : null
     };
   },
   created(){
+    this.create = this.$route.query.create
     if(this.$route.query.storeId){
       let _self = this
       let sendData = this.$route.query.storeId
       server.signInfoId(sendData,function(res){  //从仓库详细进行编辑
           _self.getDataInfo(res)
       })
+      sessionStorage.setItem('idtyle',1)
     }else if(this.$route.query.personId){
       let _self = this
       let sendData = this.$route.query.personId
       server.AnumSign(sendData,function(res){  //从仓库详细进行编辑
           _self.getDataInfo(res)
       })
+      sessionStorage.setItem('idtyle',2)
     }
     // edui-for-inserttable
   },
@@ -224,6 +226,7 @@ export default {
       let _data = res.data
         _self.initialData = _data.data
         if(_data.infoCode == '0'){
+          _self.items[0].title = _data.data.tagName
           _self.items[0].contant = _data.data.info
           _self.items[1].contant = _data.data.source
           _self.items[2].contant = _data.data.business
@@ -261,18 +264,18 @@ export default {
             ],
             autoHeightEnabled: true,
             autoFloatEnabled: true,
+            lang:"zh-cn",
+            focus:true
           });
           _self.ue.ready(function() {
-              _self.ue.execCommand( 'focus' );
-              console.log(_self.currentEditor.contant)
               _self.ue.setContent(_self.currentEditor.contant); //编辑器家在完成后，让编辑器拿到焦点
-               _self.ue.addListener( 'contentChange', function( editor ) {
+               _self.ue.addListener( 'keyup contentChange ', function( editor ) {
                   _self.contentChange()  //编辑器内容发生变化
               })
           });
           //编辑器绑定监听事件
            _self.domArrHeight()
-         
+           _self.innerHTML = $(".container").html()
         },10)
     },
     upImage(event){  //本地预览图片
@@ -334,7 +337,7 @@ export default {
               w = 650
             }
             let imgData = {
-              src: _self.imageUrlTesting + _data.data.fileName,
+              src: imageUrl + _data.data.fileName,
               width: w,
               height: "auto"
             }
@@ -343,6 +346,7 @@ export default {
             _self.dialogVisible = false
             $("#file").val("")
             _self.iamgeInfo = ''
+            _self.contentChange()
           }
         })
       }else{
@@ -372,8 +376,11 @@ export default {
     contentChange(){
       for(let i of this.items){
         if(i.ueType == true){
-          console.log()
+          // $(window.frames["iframe"].document).find("input[@type='radio']").attr("checked","true");
+          console.log(this.ue.getContent())
+          // $("#"+i.id).fing(".view")[0].innerHTML()
           i.contant = this.ue.getContent()
+          
         }
       }
     },
@@ -409,9 +416,15 @@ export default {
                 });
             }
           _self.tool.close()
-          _self.$router.push({ path:'/numSign',query:{
-              idtyle:1
-          }})
+          if(_self.initialData.isOwner == 1){
+            _self.$router.push({ path:'/numSign',query:{
+                idtyle:2
+            }})
+          }else{
+            _self.$router.push({ path:'/numSign',query:{
+                idtyle:1
+            }})
+          }
         })
       }else {
           // this.ue.setHide()  //清除编辑器实例
@@ -444,7 +457,8 @@ export default {
             }
             _self.tool.close()
             _self.$router.push({ path:'/numSign',query:{
-                idtyle:2
+                idtyle:2,
+                createid: _self.create
             }})
           })
       }
@@ -459,7 +473,7 @@ export default {
     italic(){  //斜体
       this.ue.execCommand( 'italic' );
     },
-    handleFontsize(size){   //一级标题
+    handleFontsize(){   //一级标题
       //  this.ue.execCommand( 'fontsize', size );
       for(let i of this.items){
         i.ueType = false
@@ -467,8 +481,8 @@ export default {
       // this.ue.setHide()
       //清楚编辑器实例对象
       this.ue.destroy();
-      this.ue = null  //定义为空
-      $("#"+this.currentEditor.id).remove()
+      // this.ue = null  //定义为空
+      $("#"+this.currentEditor.id).hide()
 
       this.items.push({
         title:"自定义标题",
@@ -488,6 +502,8 @@ export default {
           ],
           autoHeightEnabled: true,
           autoFloatEnabled: true,
+          lang:"zh-cn",
+          focus:true
         });
 
         _self.ue.ready(function() {
@@ -496,7 +512,7 @@ export default {
 
         });
 
-        _self.ue.addListener( 'contentChange', function( editor ) {
+        _self.ue.addListener( 'keyup contentChange', function( editor ) {
             _self.contentChange()  //编辑器内容发生变化
         })
         _self.domArr.push($('.come').eq(_self.currentEditor.index).position().top + parseInt(document.getElementsByClassName("sideright")[0].scrollTop))
@@ -508,34 +524,109 @@ export default {
       } );
     },
     backDom(index){  //跳到制定的模块
-      console.log($(".userInfo").height(),index)
+      let domArr = Array.prototype.slice.call($(".contant .come"))
+      this.domArr = []
+      for(let i in domArr){
+         this.domArr.push($(domArr[i]).position().top)
+      }
       if(index == 0){
         $(".sideright").animate({ scrollTop: 0 }, 300);
       }else{
-        if(this.items[index] >= $(".userInfo").height() - 322){
-          this.scrollactive = index
-        }else{
-           $(".sideright").animate({ scrollTop: this.domArr[index] - 250 }, 300);
-        }
+        let num = this.domArr[index] - 400 + $(".sideright").scrollTop()
+        $(".sideright").animate({ scrollTop: num }, 300);
       }
     },
     remark(){  //重置
-      this.items = JSON.parse(JSON.stringify(this.initialItems))
-      for(let i of this.items){
-        if(i.id == this.currentEditor.id){
-          this.ue.setContent(i.contant);
-          i.ueType = true
-        }
+      let _self = this
+      let index = parseInt(this.$route.query.index)
+      if(this.currentEditor.index == (index -1) ){
+        this.items = JSON.parse(JSON.stringify(this.initialItems))
+        this.currentEditor = this.items[index - 1]
+        this.items[index - 1].ueType = true
+        this.currentEditor.ueType = true
+        console.log(_self.ue)
+        _self.ue.setContent(_self.initialItems[index - 1].contant);
+      }else{
+        // window.location.reload()
+        this.ue.destroy();
+        $("#"+this.currentEditor.id).hide()
+        // $("#"+this.currentEditor.id).hide()
+        // this.ue = null  //定义为空
+        
+        this.items = JSON.parse(JSON.stringify(this.initialItems))
+        this.currentEditor = this.items[index - 1]
+        this.items[index - 1].ueType = true
+        this.currentEditor = this.items[index - 1]
+        console.log(this.currentEditor)
+        setTimeout(function(){
+          console.log(_self.currentEditor.id)
+          _self.ue = UE.getEditor(_self.currentEditor.id, {
+            toolbars: [
+              ['inserttable']
+            ],
+            autoHeightEnabled: true,
+            autoFloatEnabled: true,
+            lang:"zh-cn",
+            focus:true
+          });
+
+          _self.ue.ready(function() {
+            //设置编辑器的内容
+            _self.ue.setContent(_self.initialItems[index - 1].contant);
+          });
+
+          _self.ue.addListener( 'keyup contentChange', function( editor ) {
+              _self.contentChange()  //编辑器内容发生变化
+          })
+
+          $("#"+_self.currentEditor.id).show()
+        },0)
       }
+    },
+    //修改标题字数限制
+    revisionTitle(e){
+      const el = e.target;
+      let value = el.innerText
+      if (window.event.keyCode === 13) {
+        e.preventDefault()
+      }
+      console.log(value.length)
+      if(value.length > 10){
+        el.innerText = value.slice(0,10);
+        this.setFocus(el)
+        // e.preventDefault()
+        // e.preventDefault()
+      }
+    },
+    //光标位置
+    setFocus(el) {
+        // el = el[0]; // jquery 对象转dom对象  
+        el.focus();
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        //判断光标位置，如不需要可删除
+        if(sel.anchorOffset!=0){
+            return;
+        };
+        sel.removeAllRanges();
+        sel.addRange(range);
+    },
+    leave(data){
+      data.edit = false
     },
     //修改标题
     getBlur(data,index){
-      $(".come").eq(index).find(".firstTitle").html($(".come").eq(index).find(".firstTitle").html().split("&nbsp;").join(""))
-      data.title = $(".come").eq(index).find(".firstTitle").html()
+      // $(".come").eq(index).find(".firstTitle").html($(".come").eq(index).find(".firstTitle").html().split("&nbsp;").join(""))
+      this.items[index].title = $(".come").eq(index).find("input").val()
+      console.log($(".come").eq(index).find("input").val(),this.items)
+      // data.title = $(".come").eq(index).find("input").val()
+    },
+    downBlur(data){
+      data.edit = true
     },
     handleform() {    //表格显示
-      // this.ue.execCommand( 'inserttable' )
-      // document.getElementById("edui23").onclick()
       $("#"+this.currentEditor.id + " .edui-button-body").click()
 
       //表格位置
@@ -559,22 +650,31 @@ export default {
         _self.backDom(_self.currentEditor.index)
       },5)
     },
-    handlescroll(el) {    //滚动导航到锚点位置显示
-      let self = this;
+    handlescroll() {    //滚动导航到锚点位置显示
       let scrlltop = parseInt(document.getElementsByClassName("sideright")[0].scrollTop)
-      let scrllTop = scrlltop + 250
       if(scrlltop > 0) {
           this.backTopType = true
       }else{
           this.backTopType = false
       }
-      console.log(this.scrollactive)
-      // console.log("滚动条高度"+scrlltop,this.domArr)
-      for(let i in this.domArr){
-        if(parseInt(scrllTop) >= this.domArr[i] ){
-          self.scrollactive = parseInt(i);
+      let domArr = Array.prototype.slice.call($(".contant .come"))
+      for(let i in domArr){
+        if($(domArr[i]).position().top <= 400){
+          this.scrollactive = parseInt(i);
         }
       }
+      // let self = this;
+      // let scrlltop = parseInt(document.getElementsByClassName("sideright")[0].scrollTop)
+      // let scrllTop = scrlltop + 400
+      
+      // for(let i in this.domArr){
+      //   if(parseInt(scrllTop) >= this.domArr[i] ){
+      //     self.scrollactive = parseInt(i);
+      //   }
+      // }
+      // event.stopPropagation()
+      // event.preventDefault()
+      // return false
     },
     handleClick(){  //监听切换图片上传方式
       if(this.activeName == 'second'){
@@ -603,10 +703,12 @@ export default {
     alterTitle(data){  //修改标题
       data.alterTitle = true
     },
-    changeEditor(data){  //是否全部可编辑
+    changeEditor(data,info){  //是否全部可编辑
+      console.log(this.ue.getContent())
       if(!this.$route.query.editAll){
         return
       }
+      
       for(let i of this.items){
         i.ueType = false
       }
@@ -616,7 +718,7 @@ export default {
       this.ue.destroy();
       // this.ue = null  //定义为空
       $("#"+this.currentEditor.id).hide()
-
+      console.log(this.items)
       this.items[data.index].ueType = true
       this.currentEditor = data
 
@@ -627,20 +729,19 @@ export default {
           ],
           autoHeightEnabled: true,
           autoFloatEnabled: true,
+          lang:"zh-cn",
+          focus:true
         });
 
         _self.ue.ready(function() {
           //设置编辑器的内容
-          _self.ue.setContent(_self.currentEditor.contant);
-
+          _self.ue.setContent(info);
         });
 
-        _self.ue.addListener( 'contentChange', function( editor ) {
+        _self.ue.addListener( 'keyup contentChange', function( editor ) {
             _self.contentChange()  //编辑器内容发生变化
         })
-
         $("#"+_self.currentEditor.id).show()
-        // console.log(this.items)
         
       },0)
         // _self.domArr.push($('.come').eq(_self.currentEditor.index).position().top + parseInt(document.getElementsByClassName("sideright")[0].scrollTop))
@@ -843,15 +944,17 @@ li {
             color: #666666;
             padding-left: 40px;
             position: relative;
+            display: flex;
             span{
+              display: inline-block;
+              min-width: 20px;
+              height: 24px;
               position: absolute;
               left: 40px;
               z-index: 100;
               padding-right: 20px;
               background: #fff;
               .firstTitle{
-                display: inline-block;
-                min-width: 20px;
                 font-style: normal;
               }
             }
@@ -860,8 +963,14 @@ li {
                 width: 100%;
                 height: 1px;
                 border-top: 1px solid #d1d1d1;
-                margin: 0 22px;
+                // margin: 0 22px;
+                margin-top: 11px;
                 vertical-align: middle;
+            }
+            input{
+              max-width: 240px;
+              // height: 26px;
+              font-size: 22px;
             }
         }
         .right{
@@ -880,6 +989,7 @@ li {
       .contantInfo{
         padding: 0 50px 58px 50px;
         font-size: 20px;
+        min-height: 335px;
         font-weight: normal;
         font-stretch: normal;
         color: #999999;
@@ -1032,7 +1142,7 @@ li {
   }
   label{
     display: inline-block;
-    width: 240px;
+    width: 260px;
     height: 64px;
     border-radius: 2px;
     border: solid 1px #b7b7b7;
@@ -1096,7 +1206,7 @@ li {
     display: none;
   }
   .edui-editor-iframeholder{
-    min-height: 120px;
+    min-height: 335px;
   }
   .hint{
     line-height: 40px;

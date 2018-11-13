@@ -39,10 +39,9 @@
                         <div class='bookSigning'>
                             <div class='bookName' v-for='(item,index) in createlist' :key='index' @mousedown="applyforId(item)">
                                 <img :src="pag" alt="">
-                                <h3 @click='details' :title="item.tagName">{{ item.tagName }}</h3>
-                                <!-- <p @click='details' :title="item.info" v-html='item.info'></p> -->
+                                <h3 @click='details(item)' :title="item.tagName">{{ item.tagName }}</h3>
                                 <div class='selectOp'>
-                                <el-select v-model="item.typeId" @change="selectData(item)" :disabled='item.auditStatus ==2 || item.auditStatus ==3' placeholder="请选择">                                    
+                                <el-select v-model="item.typeId" @change="selectData(item,item.typeId)" :disabled='item.auditStatus ==2 || item.auditStatus ==3' placeholder="请选择">                                    
                                     <el-option
                                         v-for="item in options"
                                         :key="item.typeId"
@@ -67,19 +66,14 @@
                                 <img :src="pag" alt="">
                                 <h3 @click='details2' :title="item.tagName">{{ item.tagName }}</h3>
                                 <!-- <p @click='details2' :title="item.info" v-html='item.info'></p> -->
-                                <img class='stare' @click='thestars(item)' v-if='item.isFavorite == 1' :src="xing" alt="">
-                                <img class='stare' @click='thestars(item)' v-if='item.isFavorite == 0' :src="xing1" alt="">
-                                <strong :title="item.typeName">经营类</strong>
-                               <!-- <div class='selectOp'>
-                                 <el-select v-model="item.typeId" placeholder="请选择">                                    
-                                    <el-option
-                                        v-for="item in options"
-                                        :key="item.typeId"
-                                        :label="item.typeName"
-                                        :value="item.typeId">
-                                        </el-option>
-                                    </el-select>
-                                </div> -->
+                                <el-tooltip class="item" effect="dark" content="取消收藏" placement="top-start">
+                                    <img class='stare' @click='thestars(item)' v-if='item.isFavorite == 1' :src="xing" alt="">
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="收藏" placement="top-start">
+                                    <img class='stare' @click='thestars(item)' v-if='item.isFavorite == 0' :src="xing1" alt="">
+                                </el-tooltip>
+
+                                <strong :title="item.typeName">{{item.typeName}}</strong>
                                 <span @click='Modifydata(item)' style='background-color: #4c65a4;cursor: pointer' v-if='item.auditStatus == 1'>申请更新</span>
                                 <span style='background-color: #a0b1dd;cursor: default' v-if='item.auditStatus == 3'>待更新</span>
                                 <span style='background-color: #a0b1dd;cursor: default' v-if='item.auditStatus == 5'>已更新</span>
@@ -93,8 +87,10 @@
                             <img :src="pag" alt="">
                             <h3 @click='details1' :title="item.tagName">{{ item.tagName }}</h3>
                             <!-- <p @click='details1' :title="item.info" v-html='item.info'></p> -->
-                            <strong :title="item.typeName">{{ item.typeName }}</strong>                            
-                            <img @click='stars(item,index)' class='stare' v-if='item.isFavorite == 1' :src="xing" alt="">
+                            <strong :title="item.typeName">{{ item.typeName }}</strong>      
+                            <el-tooltip class="item" effect="dark" content="取消收藏" placement="top-start">
+                                    <img @click='stars(item,index)' class='stare' v-if='item.isFavorite == 1' :src="xing" alt="">
+                            </el-tooltip>                      
                              <!--<div class='selectOp'>
                             <el-select v-model="item.typeId" placeholder="请选择">                                    
                                 <el-option
@@ -239,6 +235,12 @@ export default {
     mounted(){
         if(this.$route.query.idtyle == 1){
             this.activeName = 'second'
+        }else if(this.$route.query.idtyle == 2){
+            if(this.$route.query.createid == 2){
+                this.activeName = 'second'
+            }else {
+                this.activeName = 'first'
+            }
         }else {
             this.activeName = 'first'
         }
@@ -248,14 +250,40 @@ export default {
     methods: { 
       dialogVisibles(){  //我的创建 --修改按钮
             this.dialogVisible = false
-            this.details();
+            // this.details();
+            this.axios.get('/data-tag-persons/'+this.personId).then( res => {
+                this.resData = res.data.data
+                    this.$router.push({path:'/detailsPage',query:{
+                        resData: JSON.stringify(this.resData),
+                        tagName: this.resData.tagName,
+                        one: 1,
+                        create: 1
+                    }})
+                this.tool.close();    //遮罩层消失
+            }).catch((error) =>{
+                this.tool.close();    //遮罩层消失
+                console.log(error)
+            })
       },
       dialogVisibles1(){ //我的创建 --取消按钮
             this.dialogVisible = false;
       },
       modifyVisibles(){   //我的修改 --修改按钮
             this.dialogVisible1 = false
-            this.Modifydata()
+            // this.Modifydata()
+            this.axios.get('/data-tag-persons/'+this.modifytheId).then( res => {
+                this.resData = res.data.data
+                this.$router.push({path:'/detailsPage',query:{
+                    resData: JSON.stringify(this.resData),
+                    isFavorite: res.data.data.isFavorite,
+                    tagName: this.resData.tagName,
+                    create: 2
+                }})
+                this.tool.close();    //遮罩层消失
+            }).catch((error) =>{
+                this.tool.close();    //遮罩层消失
+                console.log(error)
+            })
       },
       modifyVisibles1(){   //我的修改 --取消按钮
             this.dialogVisible1 = false
@@ -274,6 +302,7 @@ export default {
       },
       handleClick(tab, event) { //tab标签页切换
         this.value1 = ''
+        this.value2 = ''
         this.input10 = ''
          this.pageShow = true
           this.tablab = tab.label
@@ -384,14 +413,25 @@ export default {
                     console.log(error);
             });
       },
-      details(){ //我的创建  --点击编辑 可以编辑当前内容
+      details(item){ //我的创建  --点击编辑 可以编辑当前内容
             this.axios.get('/data-tag-persons/'+this.personId).then( res => {
                 this.resData = res.data.data
-                this.$router.push({path:'/detailsPage',query:{
-                    resData: JSON.stringify(this.resData),
-                    tagName: this.resData.tagName,
-                    one: 1,
-                }})
+                if(item.auditStatus == 2 || item.auditStatus ==3){
+                     this.$router.push({path:'/detailsPage',query:{
+                        resData: JSON.stringify(this.resData),
+                        tagName: this.resData.tagName,
+                        one: 1,
+                        edit: 2,
+                        create: 1
+                    }})
+                }else {
+                    this.$router.push({path:'/detailsPage',query:{
+                        resData: JSON.stringify(this.resData),
+                        tagName: this.resData.tagName,
+                        one: 1,
+                        create: 1
+                    }})
+                }
                 this.tool.close();    //遮罩层消失
             }).catch((error) =>{
                 this.tool.close();    //遮罩层消失
@@ -404,7 +444,8 @@ export default {
                 this.$router.push({path:'/detailsPage',query:{
                     resData: JSON.stringify(this.resData),
                     isFavorite: res.data.data.isFavorite,
-                    tagName: this.resData.tagName
+                    tagName: this.resData.tagName,
+                    create: 2
                 }})
                 this.tool.close();    //遮罩层消失
             }).catch((error) =>{
@@ -418,7 +459,8 @@ export default {
                 this.$router.push({path:'/detailsPage',query:{
                     resData: JSON.stringify(this.resData),
                     isFavorite: res.data.data.isFavorite,
-                    tagName: this.resData.tagName
+                    tagName: this.resData.tagName,
+                    create: 2
                 }})
                 this.tool.close();    //遮罩层消失
             }).catch((error) =>{
@@ -451,7 +493,7 @@ export default {
                     }else if(res.data.status == 'ERROR'){
                         this.$message({
                             message: '取消收藏失败！',
-                            type: "success"
+                            type: "error"
                         });
                     }
                     this.tool.close();    //遮罩层消失
@@ -471,7 +513,7 @@ export default {
                     }else if(res.data.status == 'ERROR'){
                         this.$message({
                             message: '收藏失败！',
-                            type: "success"
+                            type: "error"
                         });
                     }
                     this.tool.close();    //遮罩层消失
@@ -494,7 +536,7 @@ export default {
             }else if(res.data.status == 'ERROR'){
                 this.$message({
                     message: '取消收藏失败！',
-                    type: "success"
+                    type: "error"
                 });
             }
             this.tool.close();    //遮罩层消失
@@ -503,7 +545,22 @@ export default {
             console.log(error)
         })
       },
-      selectData(item){  //我的创建--select选择项
+      selectData(item,id){  //我的创建--select选择项
+            this.options.map(val => {
+                if(val.typeId == id){
+                   this.axios.put('/data-tag-persons',{  
+                        // auditStatus: item.auditStatus,
+                        personId: item.personId,
+                        typeId: id
+                    }).then( res => {
+                        this.tool.close();    //遮罩层消失
+                    }).catch((error) =>{
+                        this.tool.close();    //遮罩层消失
+                        console.log(error)
+                    })
+                }
+            })
+            
           if(item.auditStatus == 4 || item.auditStatus == 5){
               this.axios.put('/data-tag-persons',{  
                 auditStatus: 1,
@@ -577,6 +634,7 @@ export default {
                 auditStatus: 3,
                 personId: item.personId
             }).then( res => {
+                item.auditStatus = 3
                 // this.numberlist()
                 console.log(res)
                 this.tool.close();    //遮罩层消失
@@ -589,6 +647,7 @@ export default {
                 auditStatus: 6,
                 personId: item.personId
             }).then( res => {
+                item.auditStatus = 6
                 // this.numberlist()
                 console.log(res)
                 this.tool.close();    //遮罩层消失
@@ -790,7 +849,7 @@ export default {
                         color: #999999;
                     } 
                     strong{
-                        width: 99px;
+                        width: 80px;
                         color: #2f90f3;
                         margin-left: 80px;
                         font-size: 15px;
@@ -853,9 +912,13 @@ export default {
                         color: #999999;
                     } 
                     strong{
+                        width: 80px;
                         color: #2f90f3;
                         margin-left: 20px;
                         font-size: 15px;
+                        overflow: hidden;
+                        text-overflow:ellipsis;
+                        white-space: nowrap;
                         cursor: default
                     }
                     span{
@@ -967,9 +1030,11 @@ export default {
         }
         .el-pagination.is-background .btn-next:disabled{
             border: 1px solid #c0c4cc;
+            color: #bbbbbb
         }
         .el-pagination.is-background .btn-prev:disabled{
             border: 1px solid #c0c4cc;
+            color: #bbbbbb
         }
         .btn-next{
             color: #409eff
@@ -999,7 +1064,7 @@ export default {
     }
     .el-dialog{
         width: 614px !important;
-        height: 290px !important;
+        // height: 290px !important;
         margin-top: 16% !important;
         border-radius: 6px !important;
     }

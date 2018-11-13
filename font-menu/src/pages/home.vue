@@ -36,8 +36,8 @@ export default {
           }
         })
         .catch(function(error) {
-          this.tool.close();    //遮罩层消失
-          this.$message({
+          self.tool.close();    //遮罩层消失
+          self.$message({
             message: "请求接口出错：" + error,
             type: "warning"
           });

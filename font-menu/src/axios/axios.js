@@ -13,7 +13,7 @@ var $axios = axios.create({
 $axios.interceptors.request.use((config) => {
     Tool.loading()      //加载遮罩
     return config;
-}, (error) => {
+},(error) => {
     _.toast("错误的传参", 'fail');
     return Promise.reject(error);
 });

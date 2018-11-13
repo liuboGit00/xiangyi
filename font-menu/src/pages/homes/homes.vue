@@ -43,7 +43,6 @@
 
 <script>
 import daLog from '../../components/dialogcomponent.vue'
-import { formatDate } from "@/assets/js/data.js"; //格式化日期
 import server from "./server.js"
 export default {
   data() {
@@ -63,7 +62,7 @@ export default {
             ok:'',
             no:''
         }
-      } 
+      }
     };
   },
   created(){
@@ -82,6 +81,7 @@ export default {
     server.getAllDataList(function(res){
       _self.tool.close();
       let _data = res.data
+      let newDataArr = []
       if(_data.infoCode == '0'){
         let pages = Math.ceil(parseInt(_data.data.total) / 3)
         for(let i = 0;i < pages;i ++){
@@ -95,7 +95,12 @@ export default {
         }
         _self.showSolid = true
       }
-      console.log(_self.allData)
+      // let allDataPages = Math.ceil(parseInt(newDataArr.length) / 10)
+      // for(let m = 0;m < allDataPages;m ++){
+      //   let allNum = parseInt(m) * 10
+      //   _self.allData[m] = newDataArr.slice(allNum,allNum+10)
+      // }
+      // console.log(_self.allData,newDataArr)
     })
     
   },
@@ -113,6 +118,7 @@ export default {
     }
   },
   methods: {
+    //手动切换轮播下一页
     submitshow: function(message) {
       //列表查询条件提交
       // this.pagepation = {
@@ -150,7 +156,6 @@ export default {
                   "no":"取消"
               }
             }
-            console.log(_self.dialogobj)
           }else{
             _self.$router.push({
               path:'/signDetails',
@@ -170,7 +175,7 @@ export default {
     //创建数签
     setSign(){
       // console.log('https://test-wl008.weilian.cn/front-data-menu-center/#/Numbersign-create?sessionId='+sessionStorage.getItem("testUserSessions"))
-      window.location.href = 'https://test-wl008.weilian.cn/front-data-menu-center/#/Numbersign-create?sessionId='+sessionStorage.getItem("testUserSessions")
+      window.location.href = 'https://test-wl008.weilian.cn/front-data-tag-center/#/Numbersign-create?sessionId='+sessionStorage.getItem("testUserSessions")
     }
   }
 };

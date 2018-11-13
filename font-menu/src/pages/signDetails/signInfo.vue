@@ -5,7 +5,7 @@
             <span class="center"><span>{{userInfo.title}}</span><i class="solid"></i></span>
             <span class="right" v-show="userInfo.edit" @click="redact(userInfo.index,userInfo.storeId)"><i class="el-icon-edit"></i>编辑</span>
         </p>
-        <div class="contantInfo" v-if="userInfo.type == 'text'" v-html="userInfo.contant"></div>
+        <div class="contantInfo edit" v-if="userInfo.type == 'text'" v-html="userInfo.contant" style="word-wrap: break-word;"></div>
         <div class="contantInfo" v-else >
             <p class="tabelTitle">{{userInfo.contant}}</p>
             <div class="tabel">
@@ -108,6 +108,7 @@ export default {
         font-weight: normal;
         font-stretch: normal;
         color: #999999;
+        min-height: 140px;
         .tabelTitle{
             margin-bottom: 22px;
         }

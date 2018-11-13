@@ -5,7 +5,7 @@
         <div class="cen">{{$route.meta.title}}</div>
       </div>
       <div class="leftpart">
-        <el-menu  :default-active='activeIndex' text-color="#ffffff" router  :collapse="isCollapse" @select="sends" :style="{padding:menucollapse}">
+        <el-menu  :default-active='activeIndex' :default-openeds="openeds" text-color="#ffffff" router  :collapse="isCollapse" @select="sends" :style="{padding:menucollapse}">
           <el-submenu index="1" >
             <template slot="title">
               <i class="iconfont icon-baogao"></i>
@@ -38,7 +38,8 @@ export default {
     return {
       iscollapsed:false,
       menucollapse:"",
-      activeIndex: this.$route.path,
+      openeds: ['1'],
+      activeIndex: '',
       isCollapse: false
     };
   },
@@ -48,29 +49,27 @@ export default {
   //     return this.$route.path
   //   }
   // },
+  mounted(){
+    if(sessionStorage.getItem('indexShow')){
+      this.activeIndex = sessionStorage.getItem('indexShow')
+    }else{
+      this.activeIndex = this.$route.path//要高亮的菜单index))
+    }
+    switch (this.activeIndex) {
+      case "/homes":
+        this.activeIndex = "/homes";
+        break;
+      case "/numSign":
+        this.activeIndex = "/numSign";
+        break;
+      case "/forSigning":
+        this.activeIndex = "/forSigning";
+        break;
+    }
+  },
   watch: {
-      $route() {
-        if(this.$route.query.idtyle ==1){
-          this.activeIndex = "/numSign";
-        }
-          // this.activeIndex = this.$route.path//要高亮的菜单index))
-          // switch (this.activeIndex) {
-          //   case "/homes":
-          //     this.activeIndex = "/homes";
-          //     break;
-          //   case "/numSign":
-          //     this.activeIndex = "/numSign";
-          //     break;
-          //   case "/forSigning":
-          //     this.activeIndex = "/forSigning";
-          //     break;
-          //   case "/detailsPage":
-          //     this.activeIndex = "/numSign";
-          //     break;
-          //   case "/organization":
-          //     this.activeIndex = "/forSigning";
-          //     break;
-          // }
+      activeIndex(newData,oldData) {
+        sessionStorage.setItem('indexShow',this.activeIndex)
       }
   },
   methods: {
@@ -84,25 +83,17 @@ export default {
       }
     },
     sends(index, indexpath) {
-      // console.log(index+1111111)
-      // // console.log(indexpath)
-      // switch (index) {
-      //   case "/homes":
-      //     this.modulestitle = "首页";
-      //     break;
-      //   case "/numSign":
-      //     this.modulestitle = "我的数签";
-      //     break;
-      //   case "/forSigning":
-      //     this.modulestitle = "组织数签";
-      //     break;
-      //   case "/detailsPage":
-      //     this.modulestitle = "我的数签";
-      //     break;
-      //   case "/organization":
-      //     this.modulestitle = "组织数签";
-      //     break;
-      // }
+      switch (index) {
+        case "/homes":
+          this.activeIndex = "/homes";
+          break;
+        case "/numSign":
+          this.activeIndex = "/numSign";
+          break;
+        case "/forSigning":
+          this.activeIndex = "/forSigning";
+          break;
+      }
     }
   }
 };
@@ -118,7 +109,6 @@ export default {
       color: #ffffff;
       font-size:20px;
       margin-right:20px;
-      cursor: pointer;
     }
     .el-icon-tickets:before {
       font-size: 23px;

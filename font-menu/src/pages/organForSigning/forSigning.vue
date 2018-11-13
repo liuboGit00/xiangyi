@@ -110,7 +110,10 @@ export default {
       numandcread: 1, //我的创建 或者是 我的收藏
       tablab: "组织创建",
       storeId: "",
-      pageShow: true
+      pageShow: true,
+      titleNam: 0,
+      formobj: {},
+      usernam: ''
     };
   },
   mounted() {
@@ -152,10 +155,18 @@ export default {
           self.userNamesX = val.userName
         }
       });
+      this.usernam =vals
+      if(vals == ''){
+        this.userNames = "组织"
+      }
     },
     searchBtn() {//点击搜索按钮 获取-选择分类-搜索内容
       this.curPage = 1;
       this.userNames = this.userNamesX;
+      if(this.usernam == ''){
+        this.userNames = "组织"
+      }
+      this.titleNam = 1      
       this.currentHandler();
     },
     handleClick(tab, event) {//tab标签页切换
@@ -242,22 +253,34 @@ export default {
       //点击分页 改变时会触发
       let numandcread = "";
       let url="";
-      let formobj = {
+      if(this.titleNam == 1){
+        this.formobj ={
           userId:this.value2,
           typeId:this.value1,
           tagName:this.input10,
           pageNum:this.curPage=page?page:this.curPage,
           pageSize:this.pageSize,
-      };
-      for(let key in formobj){
-          if(formobj[key] == ""){
-              delete formobj[key]
+        }
+      }else {
+
+         this.formobj = {
+            // userId:this.value2,
+            typeId:this.value1,
+            tagName:this.input10,
+            pageNum:this.curPage=page?page:this.curPage,
+            pageSize:this.pageSize,
+         };
+      }
+      
+      for(let key in this.formobj){
+          if(this.formobj[key] == ""){
+              delete this.formobj[key]
           }else{
             //   if(key == "pageNum"){
             //       let curpage = page?page:formobj[key];
             //       url = url + "&"+key+"="+curpage;
             //   }else{
-                  url = url + "&"+key+"="+formobj[key];
+                  url = url + "&"+key+"="+this.formobj[key];
             //   }
           }
       }
@@ -600,9 +623,11 @@ export default {
 }
 .el-pagination.is-background .btn-next:disabled {
   border: 1px solid #c0c4cc;
+  color: #bbbbbb
 }
 .el-pagination.is-background .btn-prev:disabled {
   border: 1px solid #c0c4cc;
+  color: #bbbbbb
 }
 .btn-next {
   color: #409eff;

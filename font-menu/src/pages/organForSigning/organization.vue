@@ -2,31 +2,40 @@
     <div class='main'  v-cloak @scroll="scroll">
         <div style="margin: 0 auto;width: 1126px;">
            <div class='container'>
+            <!-- <div class='alibb'> 
+               <div class='titlename'>
+                   <h3>阿里巴巴</h3>
+                   <span>(多义词,请在下列义项上选择浏览（共13个义项）)</span>
+               </div>
+               <div class='namelist' :style="widthChange">
+                   <ul>
+                       <li>
+                           <img :src="lan" alt="">
+                           <span>{{ tagName }}</span>
+                       </li>
+                   </ul>
+                   <p @click='onAll'>{{ showAll }}<span class='el-icon-arrow-right'></span></p>
+               </div>
+            </div> -->
             <div class='business'>
                 <div class='titlename'>
-                   <p class="title">{{ tagNameTab }} <span class='typeName'>{{typeName}}</span><span @click='theEditor'><i class="el-icon-edit"></i> 编辑</span>
-                   <span @click="collection" v-if='oneHide'>
-                    <img src="../../assets/img/xingTrue.png" alt=""  v-if='redcollec == 1'>
-                    <img src="../../assets/img/xingFalse.png" alt=""  v-else> 收藏
-                    </span>
-                   </p>
+                   <p class="title">{{ tagNameTab }}  <span class='typeName'>{{typeName}}</span></p>
                </div>
                <div class='income'>
                    <div class='operating' v-for="(item,index) in items" :key="index" :userInfo="item" v-if='index != 3'>
-                        <div class='in-title'>
-                            <h3>{{ item.title }}</h3><span></span>
-                            <p class='el-icon-edit' @click="editor1(index)">
-                                编辑
-                            </p>
-                        </div>
-                        <div class='textarea edit'>
-                            <div v-html="item.contant" style="overflow: hidden"></div>
+                        <p class='in-title'>
+                            <span class="left"></span>
+                            <span class="center"><span>{{item.title}}</span><i class="solid"></i></span>
+                        </p>
+                        <div class='textarea'>
+                            <div v-html="item.contant" style="word-wrap: break-word;"></div>
                         </div>
                    </div>
                    <div class='operating1' v-else>
-                        <div class='in-title'>
-                            <h3>数据使用</h3><span></span>
-                        </div>
+                         <p class='in-title'>
+                            <span class="left"></span>
+                            <span class="center"><span>{{item.title}}</span><i class="solid"></i></span>
+                        </p>
                         <div class='textarea'>
                             <p>营业收入，被88个报告和88张报表所使用</p>
                             <div class='use'>
@@ -80,11 +89,12 @@
 </template>
 
 <script>
+import axios from '../../axios/axios.js';
 export default {
     data(){
         return{
             items:[{
-                title:"营业收入",
+                title:"字段定义",
                 edit:true,
                 type:'text',
                 contant:""
@@ -107,9 +117,9 @@ export default {
             }
             ],
              redcoll:'color: #999999',
-             redcollec: 1,
+             redcollec: false,
              resData: null,
-             Tab: '',
+             tagName: '',
              typeName: '',
              storeId: '',
              lan:require('../../assets/img/lan.png'),
@@ -124,35 +134,26 @@ export default {
              disableds2: true,   
              disableds3: true,   
              personId: '',
-             backTopType:false,  //回到顶部按钮
-             isFavorite: null,
+             backTopType: false,
              tagNameTab: '',
-             oneHide: true
         }
     },
     mounted(){
-        //  debugger
+        // <p data-v-46090f24="" class="catalog"><span data-v-46090f24="" class="left"></span> <span data-v-46090f24="" class="center"><span data-v-46090f24=""><em data-v-46090f24="" contenteditable="true" class="firstTitle">888888题</em></span> <i data-v-46090f24="" class="solid"></i></span> <span data-v-46090f24="" class="right" style="display: none;"><i data-v-46090f24="" class="el-icon-edit"></i>编辑</span></p> <div data-v-46090f24="" class="contantInfo"><script data-v-46090f24="" id="contant5" name="content" type="text/plain">/script> <div data-v-46090f24="" class="saveContant"></div></div>累死我了<p data-v-46090f24="" class="catalog"><span data-v-46090f24="" class="left"></span> <span data-v-46090f24="" class="center"><span data-v-46090f24=""><em data-v-46090f24="" contenteditable="true" class="firstTitle">自定义标题</em></span> <i data-v-46090f24="" class="solid"></i></span> <span data-v-46090f24="" class="right" style="display: none;"><i data-v-46090f24="" class="el-icon-edit"></i>编辑</span></p> <div data-v-46090f24="" class="contantInfo"> <div data-v-46090f24="" class="saveContant" style="display: none;"></div></div>累死我了"
         this.resData = this.$route.query;
-        if(this.$route.query.one == 1){  //此处判断 如果是从我的创建跳转此页面 就把收藏按钮隐藏
-            this.oneHide = false
-        }else {
-             this.oneHide = true
-        }
-        this.isFavorite = this.$route.query.isFavorite
         this.tagNameTab = this.$route.query.tagName
-        let _data = JSON.parse(this.resData.resData)
-        if(this.isFavorite == 1){   //通过路由传过来的参数 来显示收藏按钮
-            this.redcollec = 1
+        if(this.resData.one == 1){   //通过路由传过来的参数 来显示收藏按钮
+            this.redcollec = false
         }else {
-            this.redcollec = ''
+            this.redcollec =true
         }
-        this.items[0].contant = _data.info
-        this.items[1].contant = _data.source
-        this.items[2].contant = _data.business
+        this.items[0].contant = this.resData.resData.info
+        this.items[0].title = this.$route.query.tagName
+        this.items[1].contant = this.resData.resData.source
+        this.items[2].contant = this.resData.resData.business
         // console.log(this.resData.resData.other)
-        let newData = _data.other
-        if(newData != '' && newData != null && newData != undefined){
-             let otherData = newData.split("累死我了")
+        let newData = this.resData.resData.other
+                let otherData = newData.split("累死我了")
                 for(let i in otherData){
                     if(i != (parseInt(otherData.length) -1)  ){
                         var d = document.createElement("div")
@@ -165,12 +166,11 @@ export default {
                         })
                     }
                 }
-        }
 
-        this.Tab = _data.Tab //阿里巴巴
-        this.storeId = _data.storeId //阿里巴巴
-        this.typeName = _data.typeName //类型名称
-        this.personId  = _data.personId   //相关业务
+        this.tagName = this.resData.resData.tagName //阿里巴巴
+        this.storeId = this.resData.resData.storeId //阿里巴巴
+        this.typeName = this.resData.resData.typeName //类型名称
+        this.personId  = this.resData.resData.personId   //相关业务
     },
     methods:{
          //检测页面滚动
@@ -185,39 +185,6 @@ export default {
         backTop(){
             document.getElementsByClassName("main")[0].scrollTop = 0
             this.backTopType = false
-        },
-        collection(){  //点击收藏按钮
-            if(this.redcollec == 1){
-                this.axios.delete('/data-tag-favorites/'+this.storeId).then( res => {
-                    this.redcollec = null
-                    if(res.data.status == 'SUCCESS'){
-                        this.$message({
-                            message: '取消收藏成功',
-                            type: "success"
-                        });
-                    }
-                    this.tool.close();    //遮罩层消失
-                }).catch((error) =>{
-                    this.tool.close();    //遮罩层消失
-                    console.log(error)
-                })
-                return
-            }else{
-                this.redcollec = 1
-                this.axios.post('/data-tag-favorites/'+this.storeId).then( res => {
-                    if(res.data.status == 'SUCCESS'){
-                        this.$message({
-                            message: '收藏成功',
-                            type: "success"
-                        });
-                    }
-                    this.tool.close();    //遮罩层消失
-                }).catch((error) =>{
-                    this.tool.close();    //遮罩层消失
-                    console.log(error)
-                })
-                return
-            }
         },
         onAll(){
             if(this.showAll == '展开全部'){
@@ -237,16 +204,6 @@ export default {
                 query: { 
                     personId : this.personId,
                     index : index+1
-                }
-            })
-        },
-        theEditor(){
-            this.$router.push({
-                path:'/edit',
-                query: { 
-                    personId : this.personId,
-                    index : 1,
-                    editAll: 1
                 }
             })
         },
@@ -385,12 +342,6 @@ export default {
                         color:#278df6;
                         margin: 0 20px 0 10px;
                     }
-                    img{
-                        width: 14px;
-                        height: 14px;
-                        margin-top: 3px; 
-                        vertical-align: text-top;
-                    }
                 }
             }
             .income{
@@ -398,39 +349,62 @@ export default {
                 .operating{
                     .in-title{
                         width: 100%;
-                        height: 24px;
                         margin-top: 40px;
-                        border-left: 10px solid #278df6;
-                        display: flex;
-                        h3{
-                            padding-left: 33px;
-                            font-size: 24px;
-                            width: 130px;
-                            height: 24px;
-                            line-height: 24px;
-                            color: #666666;
-                            overflow: hidden;
-                            text-overflow:ellipsis;
-                            white-space: nowrap;
-                        }
+                        height: 24px;
+                        line-height: 24px;
+                        margin-bottom: 35px;
                         span{
-                            width: 795px;
-                            height: 1px;
-                            border: solid 1px #d1d1d1;
-                            margin-left: 22px;
-                            margin-top: 11px;
+                            float: left;
                         }
-                        p{
+                        .left{
+                            width: 10px;
+                            height: 24px;
+                            background-color: #278df6;
+                        }
+                        .center{
+                            width: 900px;
+                            font-size: 24px;
+                            font-weight: normal;
+                            font-stretch: normal;
+                            letter-spacing: 0px;
+                            color: #666666;
+                            margin-left: 40px;
+                            position: relative;
+                            span{
+                            position: absolute;
+                            left: 0;
+                            z-index: 100;
+                            padding-right: 20px;
+                            background: #fff;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            max-width: 424px;
+                            white-space: nowrap;
+                            }
+                            .solid{
+                                display: inline-block;
+                                width: 98%;
+                                height: 1px;
+                                border-top: 1px solid #d1d1d1;
+                                vertical-align: middle;
+                            }
+                        }
+                        .right{
                             font-size: 18px;
-                            margin-left: 15px;
+                            margin-right: 20px;
+                            color: #999999;
                             cursor: pointer;
+                            i{
+                                margin-right: 10px; 
+                            }
                         }
-                        p:hover{
+                        .right:hover{
                             color: #278df6;
                         }
                     }
                     .textarea{
                         width: 100%;
+                        // height: 161px;
                         padding: 35px 77px 58px 49px;
                         color: #999999;
                         font-size: 20px;
@@ -438,28 +412,50 @@ export default {
                             background: none !important;
                             border: none;
                         }
-                        
                     }
                 }
                 .operating1{
                     .in-title{
                         width: 100%;
-                        height: 23px;
                         margin-top: 40px;
-                        border-left: 10px solid #278df6;
-                        display: flex;
-                        h3{
-                            padding-left: 33px;
-                            font-size: 24px;
-                            line-height: 21px;
-                            color: #666666;
-                        }
+                        height: 24px;
+                        line-height: 24px;
+                        margin-bottom: 35px;
                         span{
-                            width: 795px;
-                            height: 1px;
-                            border: solid 1px #d1d1d1;
-                            margin-left: 22px;
-                            margin-top: 11px;
+                            float: left;
+                        }
+                        .left{
+                            width: 10px;
+                            height: 24px;
+                            background-color: #278df6;
+                        }
+                        .center{
+                            width: 900px;
+                            font-size: 24px;
+                            font-weight: normal;
+                            font-stretch: normal;
+                            letter-spacing: 0px;
+                            color: #666666;
+                            margin-left: 40px;
+                            position: relative;
+                            span{
+                            position: absolute;
+                            left: 0;
+                            z-index: 100;
+                            padding-right: 20px;
+                            background: #fff;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            max-width: 424px;
+                            white-space: nowrap;
+                            }
+                            .solid{
+                                display: inline-block;
+                                width: 98%;
+                                height: 1px;
+                                border-top: 1px solid #d1d1d1;
+                                vertical-align: middle;
+                            }
                         }
                     }
                     .textarea{
@@ -508,7 +504,6 @@ export default {
                                 margin-left: 50px;
                             }
                         }
-                        
                     }
                 }
             }
@@ -532,13 +527,5 @@ export default {
         }
     }
 </style>
-<style lang="less">
-    .edit td { border:1px solid #ccc; }
-    .edit table { 
-        border-collapse: collapse;
-    }
-</style>
-
-
 
 

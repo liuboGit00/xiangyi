@@ -2,8 +2,8 @@
   <div class="page" v-cloak>
       <div class="formSelectGroup">
         <div class="form-input">
-           <el-input v-model="searchData"></el-input>
-           <el-button type="primary" @click="search">搜索</el-button>
+           <el-input v-model="searchData" placeholder="请输入数签名"></el-input>
+           <el-button type="primary" @click="search" >搜索</el-button>
         </div>
       </div>
       <div class="container">
@@ -12,15 +12,19 @@
             <div class="contentPage" v-for="(item,index) in items" :key="index">
                 <img :src="pag" alt="">
                 <h3 @click='storeId(item)'>{{item.tagName}}</h3>
-                <strong :title="item.typeName">{{ item.typeName }}</strong>                            
-                <img src="../../assets/img/xingTrue.png" alt="" @click="collect(item)" v-if="item.isFavorite == 1">
-                <img src="../../assets/img/xingFalse.png" alt="" @click="collect(item)" v-else>
+                <strong :title="item.typeName">{{ item.typeName }}</strong>
+                <el-tooltip class="item" effect="dark" content="取消收藏" placement="top-start">
+                     <img src="../../assets/img/xingTrue.png" alt="" @click="collect(item)" v-show="item.isFavorite == 1">
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="收藏" placement="top-start">
+                    <img src="../../assets/img/xingFalse.png" alt="" @click="collect(item)" v-show="item.isFavorite == 0">
+                </el-tooltip>                     
             </div>
         </div>
       </div>
       <div class="fenye">
         <div class='numli'>
-            <el-pagination
+            <!-- <el-pagination
                 background
                 layout="prev, pager, next"
                 :total="total"
@@ -28,15 +32,17 @@
                 @current-change="pages"
                 prev-text="上一页"
                 next-text="下一页" v-show="total">
-            </el-pagination>
+            </el-pagination> -->
+            <paging :pagination="pagination" @pagingState="pagingData" v-show="total"></paging>
         </div>
     </div>
-      <daLog :dialogobj="dialogobj"></daLog>
+    <daLog :dialogobj="dialogobj"></daLog>
   </div>
 </template>
 
 <script>
 import daLog from '../../components/dialogcomponent.vue'
+import paging from '../../components/paging.vue'
 import server from "./server.js"; //本页所有接口内容集合(每个页面单独添加)
 import axios from "../../axios/axios.js"
 
@@ -58,14 +64,28 @@ export default {
             }
         },
         pag:require('../../assets/img/pag.png'),
+        pageNum:1,
+        pageSize:16,
+        total:0
     };
   },
   created(){
-      let param = 'typeId='+this.$route.query.typeId+"&pageNum=1&pageSize=16"
+      let param = 'typeId='+this.$route.query.typeId+"&pageNum="+this.pageNum+"&pageSize="+this.pageSize
       this.getListInfo(param)
   },
+  computed:{
+      pagination:function(){
+        let data = {
+            size: this.pageSize,
+            page: this.pageNum,
+            total: this.total
+        }
+        return data;    //包扣（宽度，标题，showflag）
+      }
+  },
   components: {
-    daLog
+    daLog,
+    paging
   },
   mounted() {
 
@@ -136,7 +156,7 @@ export default {
                 type:"set",
                 button:{
                     "ok":'创建',
-                    "ok":"取消"
+                    "no":"取消"
                 }
             }
           }else{
@@ -153,10 +173,10 @@ export default {
       })
     },
     //分页
-    pages(val){
-      let param = 'typeId='+this.$route.query.typeId+"&pageNum="+val+"&pageSize=16"
-      this.getListInfo(param)
-    },
+    // pages(val){
+    //   let param = 'typeId='+this.$route.query.typeId+"&pageNum="+val+"&pageSize=16"
+    //   this.getListInfo(param)
+    // },
     //进入详情页
     storeId(data){
         this.$router.push({
@@ -166,6 +186,14 @@ export default {
                 typeName: data.typeName
             }
         })
+    },
+    //分页数据
+    pagingData(data){
+        console.log(data)
+        this.pageNum = data.page
+        this.pageSize = data.size
+        let param = 'typeId='+this.$route.query.typeId+"&pageNum="+this.pageNum+"&pageSize="+this.pageSize
+        this.getListInfo(param)
     }
   }
 };
@@ -188,7 +216,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: start;
-  padding-left: 64px;
+  padding-left: 11.54%;
   justify-content: center;
   .el-radio {
     color: #fff;
@@ -199,6 +227,7 @@ export default {
     .el-input {
       width: 520px;
       height: 42px;
+      font-size: 14px;
     }
     button {
       width: 108px;
@@ -242,10 +271,7 @@ export default {
                 margin-left: 14px;
                 margin-top: 14px;
                 cursor: pointer;
-            }   
-            img:last-child{
-                margin-left: 22px;
-            }   
+            }      
             h3{
                 cursor: pointer;
                 font-size: 18px;
@@ -268,7 +294,7 @@ export default {
                 color: #999999;
             } 
             strong{
-                width: 72px;
+                width: 99px;
                 color: #2f90f3;
                 margin-left: 80px;
                 font-size: 15px;
@@ -299,41 +325,6 @@ export default {
     .numli{
         padding: 16px 40px 0px 40px;
         float: right;
-        .el-pagination.is-background .el-pager li{
-            border: 1px solid #409eff;
-            // color: #409eff;
-        }
-        .el-pagination.is-background .btn-next{
-            border: 1px solid #409eff;
-            color: #409eff;
-        }
-        .el-pagination.is-background .btn-prev{
-            border: 1px solid #409eff;
-            color: #409eff;
-        }
-        .el-pagination.is-background .btn-next:disabled{
-            border: 1px solid #c0c4cc;
-        }
-        .el-pagination.is-background .btn-prev:disabled{
-            border: 1px solid #c0c4cc;
-        }
-        .btn-next{
-            color: #409eff
-        }
-        .btn-prev{
-            color: #409eff
-        }
-        .el-button{
-            background-color: #4c65a4 !important;
-            /* background-color: #4c65a4; */
-        }
-        .el-button:hover {
-            background-color: #c9d0e4 !important;
-            color: #fff !important;
-        }
-        .el-pagination span:not([class*=suffix]){
-            padding: 0px 10px;
-        }
     }
 }
 </style>

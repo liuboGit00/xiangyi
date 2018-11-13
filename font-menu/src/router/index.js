@@ -23,7 +23,7 @@ export default new Router({
           name: 'signList',
           component: resolve => require(['../pages/signList/signList.vue'], resolve),
           meta:{
-            title:"数签目录",
+            title:"数签列表",
           }
         },{
           path: '/signDetails',

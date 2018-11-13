@@ -202,3 +202,15 @@ ul.el-menu {
 .publicprogress label:nth-child(3) .el-radio__label{
     color:#3190f2;
 }
+/* title样式 */
+.el-tooltip__popper.is-dark{
+    height: 25px;
+    opacity: 0.5;
+    line-height: 4px;
+}
+
+/*  tabs键盘切换边框  */
+.el-tabs__nav .is-focus{
+    border-radius:0 !important;
+    box-shadow:none !important;
+}

@@ -678,6 +678,7 @@ export default {
       }
     },
     imgUpload(event) {
+      console.log(event.target.files)
       let files = event.target.files;
       this.formURL = files;
       for (let i in files) {
@@ -789,6 +790,9 @@ export default {
     //视频上传
     playType(type,index){
       if(type == 3){
+        this.imgList[index].videoType  = 2
+        this.$refs["video"+index][0].play()
+      }if(type == 3){
         this.imgList[index].videoType  = 2
         this.$refs["video"+index][0].play()
       }

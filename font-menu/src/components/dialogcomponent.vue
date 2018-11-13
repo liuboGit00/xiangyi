@@ -16,13 +16,6 @@
             <p>欢迎您来创建与分享关于该数签的信息</p>
           </div>
         </div>
-        <div class="topImg" v-else>
-          <el-form ref="form" :model="form" label-width="126px">
-            <el-form-item label="图片说明：">
-              <el-input v-model="iamgeInfo" placeholder="图片说明："></el-input>
-            </el-form-item>
-          </el-form> 
-        </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="setSign">{{dialogobj.button.ok}}</el-button>
           <el-button  @click="dialogobj.dialogVisible = false" >{{dialogobj.button.no}}</el-button>
@@ -52,19 +45,13 @@ export default {
   components: {
   },
   methods:{
-    cancle(done){
-    this.$emit("dialog-cancle",this.dialogVisibles.title,"close")   
-    },
-    sure(done){
-    this.$emit("dialog-sure",this.dialogVisibles.title,"sure")
-    },
     //点击叉号关闭页面
     handleClose(done){
       done();
     },
     setSign(){
       this.dialogobj.dialogVisible = false
-      window.location.href = 'https://test-wl008.weilian.cn/front-data-menu-center/#/Numbersign-create?sessionId='+sessionStorage.getItem("testUserSessions")
+      window.location.href = 'https://test-wl008.weilian.cn/front-data-tag-center/#/Numbersign-create?sessionId='+sessionStorage.getItem("testUserSessions")
     }
   }
 }

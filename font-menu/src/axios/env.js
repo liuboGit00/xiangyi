@@ -3,20 +3,23 @@
  * 以及静态变量
  * baseUrl: 域名地址
  * routerMode: 路由模式
+ * imageUrl： 图片路径
  */
 let baseUrl = '';
 let routerMode = 'history';
+let imageUrl = '';
 let DEBUG = false;
 let cancleHTTP = [];//取消请求头设置；
 if (process.env.NODE_ENV == 'development') { //开发环境走的地址（npm run dev）
 	baseUrl = "http://10.6.244.5:8892/";
+	imageUrl = 'http://10.6.244.5:8280/dm-project/upload/images/'
 	DEBUG = true;
 } else if (process.env.NODE_ENV == 'production') {  //生产环境地址
 	baseUrl = "https://dmds.sunmath.cn/";   //生产地址
 	DEBUG = false;
 } else if (process.env.NODE_ENV == 'testing') {  //测试环境地址
 	baseUrl = "https://test-wl008.weilian.cn/";   //测试地址
-
+	imageUrl = 'https://test-wl008.weilian.cn/dm-project/upload/images/',
 	DEBUG = false;
 }
 
@@ -25,5 +28,6 @@ export{
 	routerMode,
 	DEBUG,
 	ROLE,
+	imageUrl,
 	cancleHTTP
 }
